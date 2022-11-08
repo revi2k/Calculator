@@ -120,15 +120,6 @@ class Ui_MainWindow(object):
         self.Number0.setFont(font)
         self.Number0.setObjectName("Number0")
         self.gridLayout.addWidget(self.Number0, 3, 0, 1, 1)
-        self.NumberDouble0 = QtWidgets.QPushButton(self.widget)
-        self.NumberDouble0.setMinimumSize(QtCore.QSize(80, 80))
-        self.NumberDouble0.setMaximumSize(QtCore.QSize(80, 80))
-        font = QtGui.QFont()
-        font.setFamily("Calibri Light")
-        font.setPointSize(20)
-        self.NumberDouble0.setFont(font)
-        self.NumberDouble0.setObjectName("NumberDouble0")
-        self.gridLayout.addWidget(self.NumberDouble0, 3, 1, 1, 1)
         self.Dot = QtWidgets.QPushButton(self.widget)
         self.Dot.setMinimumSize(QtCore.QSize(80, 80))
         self.Dot.setMaximumSize(QtCore.QSize(80, 80))
@@ -137,7 +128,16 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         self.Dot.setFont(font)
         self.Dot.setObjectName("Dot")
-        self.gridLayout.addWidget(self.Dot, 3, 2, 1, 1)
+        self.gridLayout.addWidget(self.Dot, 3, 1, 1, 1)
+        self.Clear = QtWidgets.QPushButton(self.widget)
+        self.Clear.setMinimumSize(QtCore.QSize(80, 80))
+        self.Clear.setMaximumSize(QtCore.QSize(80, 80))
+        font = QtGui.QFont()
+        font.setFamily("Calibri Light")
+        font.setPointSize(20)
+        self.Clear.setFont(font)
+        self.Clear.setObjectName("Dot")
+        self.gridLayout.addWidget(self.Clear, 3, 2, 1, 1)
         self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
@@ -220,6 +220,8 @@ class Ui_MainWindow(object):
 
         #OPERATIONS: 1:X,2:/,3:-,4:+,5:%,6:=
         self.number_in_queue = ""
+        self.current_result = 0
+
         def return_number0():
             self.number_in_queue += "0"
         def return_number1():
@@ -246,8 +248,21 @@ class Ui_MainWindow(object):
             self.number_in_queue = self.number_in_queue[:-1]
             self.lineEdit.setText(self.number_in_queue)
 
+        def add():
+            self.current_result += int(self.number_in_queue)
+            self.lineEdit.setText(str(self.current_result))
+            self.number_in_queue = ""
+        def clear():
+            self.current_result = 0
+            self.number_in_queue = ""
+            self.lineEdit.setText(None)
+
         #BUTTONS ACTIONS
         self.CloseApp.clicked.connect(exit)
+        self.Operation5.clicked.connect(delete)
+        self.Operation4.clicked.connect(add)
+        self.Clear.clicked.connect(clear)
+
         self.Number0.clicked.connect(return_number0)
         self.Number0.clicked.connect(update)
 
@@ -278,7 +293,7 @@ class Ui_MainWindow(object):
         self.Number9.clicked.connect(return_number9)    
         self.Number9.clicked.connect(update)
 
-        self.Operation5.clicked.connect(delete)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -293,8 +308,8 @@ class Ui_MainWindow(object):
         self.Number2.setText(_translate("MainWindow", "2"))
         self.Number3.setText(_translate("MainWindow", "3"))
         self.Number0.setText(_translate("MainWindow", "0"))
-        self.NumberDouble0.setText(_translate("MainWindow", "00"))
         self.Dot.setText(_translate("MainWindow", "."))
+        self.Clear.setText(_translate("MainWindow", "CLEAR"))
         self.CloseApp.setText(_translate("MainWindow", "OFF"))
         self.Operation1.setText(_translate("MainWindow", "X"))
         self.Operation2.setText(_translate("MainWindow", "/"))
