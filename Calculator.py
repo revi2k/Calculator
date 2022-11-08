@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import QMessageBox
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -22,6 +22,10 @@ class Ui_MainWindow(object):
         self.lineEdit.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lineEdit.setReadOnly(True)
         self.lineEdit.setObjectName("lineEdit")
+        font = QtGui.QFont()
+        font.setPointSize(24)
+        self.lineEdit.setFont(font)
+
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(180, 180, 434, 342))
         self.widget.setObjectName("widget")
@@ -218,49 +222,141 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+
         #OPERATIONS: 1:X,2:/,3:-,4:+,5:%,6:=
-        self.number_in_queue = ""
-        self.current_result = 0
+        self.number_in_queue2 = ""
+        self.current_result = 0.0
+        self.last_signal = None
+
+        def error(errorType): # error function, popup window with error type
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText(errorType)
+                x = msg.exec_()
+                return x
+
+        def last_signal(): # last singal function, necessary to identify last operation
+            if self.last_signal == 'Add':
+                self.last_signal = None
+                add()
+            elif self.last_signal == 'Sub':
+                self.last_signal = None
+                sub()
+            elif self.last_signal == 'Mul':
+                self.last_signal = None
+                mult()
+            elif self.last_signal == 'Div':
+                self.last_signal = None
+                divi()
+
+        def add(): # add function
+            last_signal()
+            if self.number_in_queue2 == "":
+                self.lineEdit.setText(str(self.current_result))
+                self.number_in_queue2 = ""
+                self.last_signal = 'Add'
+            else:
+                self.current_result += float(self.number_in_queue2)
+                self.lineEdit.setText(str(self.current_result))
+                self.number_in_queue2 = ""
+                self.last_signal = 'Add' 
+
+        def sub(): # subtract function
+            last_signal()
+            if self.number_in_queue2 == "":
+                self.lineEdit.setText(str(self.current_result))
+                self.number_in_queue2 = ""
+                self.last_signal = 'Sub'
+            else:
+                self.current_result -= float(self.number_in_queue2)
+                self.lineEdit.setText(str(self.current_result))
+                self.number_in_queue2 = ""
+                self.last_signal = 'Sub'
+        def mult(): # multiple function
+            last_signal()
+            if self.number_in_queue2 == "":
+                self.lineEdit.setText(str(self.current_result))
+                self.number_in_queue2 = ""
+                self.last_signal = 'Mul'
+            else:
+                if self.current_result > 0:
+                    self.current_result = self.current_result * float(self.number_in_queue2)
+                    self.lineEdit.setText(str(self.current_result))
+                    self.number_in_queue2 = ""
+                    self.last_signal = 'Mul'
+                else:
+                    self.current_result = float(self.number_in_queue2)
+                    self.number_in_queue2 = ""
+                    self.last_signal = 'Mul'
+        def divi(): # divide function
+            try:
+                last_signal()
+                if self.number_in_queue2 == "":
+                    self.lineEdit.setText(str(self.current_result))
+                    self.number_in_queue2 = ""
+                    self.last_signal = 'Div'
+                else:
+                    if self.current_result > 0:
+                        self.current_result = self.current_result / float(self.number_in_queue2)
+                        self.lineEdit.setText(str(self.current_result))
+                        self.number_in_queue2 = ""
+                        self.last_signal = 'Div'
+                    else:
+                        self.current_result = float(self.number_in_queue2)
+                        self.number_in_queue2 = ""
+                        self.last_signal = 'Div'
+            except ZeroDivisionError:
+                error("You can't divide by 0!")
+                clear()
 
         def return_number0():
-            self.number_in_queue += "0"
+            self.number_in_queue2 += "0"
         def return_number1():
-            self.number_in_queue += "1"
+            self.number_in_queue2 += "1"
         def return_number2():
-            self.number_in_queue += "2"
+            self.number_in_queue2 += "2"
         def return_number3():
-            self.number_in_queue += "3"
+            self.number_in_queue2 += "3"
         def return_number4():
-            self.number_in_queue += "4"
+            self.number_in_queue2 += "4"
         def return_number5():
-            self.number_in_queue += "5"
+            self.number_in_queue2 += "5"
         def return_number6():
-            self.number_in_queue += "6"
+            self.number_in_queue2 += "6"
         def return_number7():
-            self.number_in_queue += "7"
+            self.number_in_queue2 += "7"
         def return_number8():
-            self.number_in_queue += "8"
+            self.number_in_queue2 += "8"
         def return_number9():
-            self.number_in_queue += "9"
+            self.number_in_queue2 += "9"
         def update():
-            self.lineEdit.setText(self.number_in_queue)
-        def delete():
-            self.number_in_queue = self.number_in_queue[:-1]
-            self.lineEdit.setText(self.number_in_queue)
-
-        def add():
-            self.current_result += int(self.number_in_queue)
+            self.lineEdit.setText(self.number_in_queue2)
+        def result():
+            last_signal()
             self.lineEdit.setText(str(self.current_result))
-            self.number_in_queue = ""
         def clear():
             self.current_result = 0
-            self.number_in_queue = ""
+            self.number_in_queue2 = ""
             self.lineEdit.setText(None)
+
+
 
         #BUTTONS ACTIONS
         self.CloseApp.clicked.connect(exit)
-        self.Operation5.clicked.connect(delete)
+
+        self.Operation1.clicked.connect(mult)
+        self.Operation1.clicked.connect(last_signal)
+
+        self.Operation2.clicked.connect(divi)
+        self.Operation2.clicked.connect(last_signal)
+
+        self.Operation3.clicked.connect(sub)
+        self.Operation3.clicked.connect(last_signal)
+
         self.Operation4.clicked.connect(add)
+        self.Operation4.clicked.connect(last_signal)
+
+        self.Operation6.clicked.connect(result)
         self.Clear.clicked.connect(clear)
 
         self.Number0.clicked.connect(return_number0)
@@ -291,7 +387,7 @@ class Ui_MainWindow(object):
         self.Number8.clicked.connect(update)
 
         self.Number9.clicked.connect(return_number9)    
-        self.Number9.clicked.connect(update)
+        self.Number9.clicked.connect(update)   
 
 
 
@@ -315,7 +411,7 @@ class Ui_MainWindow(object):
         self.Operation2.setText(_translate("MainWindow", "/"))
         self.Operation3.setText(_translate("MainWindow", "-"))
         self.Operation4.setText(_translate("MainWindow", "+"))
-        self.Operation5.setText(_translate("MainWindow", "DELETE"))
+        self.Operation5.setText(_translate("MainWindow", ""))
         self.Operation6.setText(_translate("MainWindow", "="))
 
 
